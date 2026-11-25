@@ -56,7 +56,7 @@
       a{color:var(--azul)}
       button,[role="button"],select,summary,input:not([type="checkbox"],[type="radio"]){min-height:2.25rem}
       .wrap{max-width:1120px;margin:0 auto;padding:0 26px}
-      @media (max-width:480px){ .wrap{padding:0 24px} }
+      @media (max-width:760px){ .wrap{padding:0 28px} }
 
       .azulejo{height:14px;background-repeat:repeat-x;background-size:28px 14px;opacity:.9}
 
@@ -274,6 +274,19 @@
         display:none;align-items:center;justify-content:center;padding:0 6px;
       }
       .wa-float .n.show{display:inline-flex}
+
+      /* En celular: menos separación vertical entre el héroe y las secciones,
+         y el contenido del héroe centrado con aire a los lados */
+      @media (max-width:760px){
+        .hero-in{padding:52px 4px 40px;max-width:600px}
+        .hero p.lead{margin-left:auto;margin-right:auto}
+        .open-pill{margin-top:20px}
+        section{padding:42px 0}
+        .frase{padding:38px 24px}
+        .sec-head{margin-bottom:22px}
+        .temporada{margin-top:16px}
+        .cart{margin-top:22px}
+      }
 
       /* ---------- Animación ---------- */
       @keyframes riseIn{
