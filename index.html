@@ -49,12 +49,14 @@
       body{
         margin:0;background:var(--bg);color:var(--ink);
         font-family:"Karla",system-ui,sans-serif;font-size:17px;line-height:1.55;
+        overflow-x:clip;
       }
       h1,h2,h3,.brand{font-family:"Marcellus",serif;font-weight:400;letter-spacing:.01em}
       img{max-width:100%;display:block}
       a{color:var(--azul)}
       button,[role="button"],select,summary,input:not([type="checkbox"],[type="radio"]){min-height:2.25rem}
-      .wrap{max-width:1120px;margin:0 auto;padding:0 20px}
+      .wrap{max-width:1120px;margin:0 auto;padding:0 26px}
+      @media (max-width:480px){ .wrap{padding:0 24px} }
 
       .azulejo{height:14px;background-repeat:repeat-x;background-size:28px 14px;opacity:.9}
 
@@ -87,6 +89,31 @@
       .btn-ghost{background:transparent;color:var(--hero-ink);border:1.5px solid rgba(255,248,236,.75)}
       .btn-sm{padding:8px 16px;min-height:40px;font-size:.92rem}
       @media (max-width:760px){ nav a:not(.btn){display:none} }
+
+      /* En celular todo respira y se centra un poco más */
+      @media (max-width:760px){
+        .hero-in{text-align:center;margin:0 auto;padding-left:6px;padding-right:6px}
+        .hero-cta{justify-content:center}
+        .hero .place{justify-content:center}
+        .sec-head{text-align:center;margin-left:auto;margin-right:auto}
+        .sec-head .rule{margin-left:auto;margin-right:auto}
+        .temporada{justify-content:center;text-align:center}
+        .temporada p{text-align:center}
+        .about{text-align:center}
+        .about .rule{margin-left:auto;margin-right:auto}
+        .stats,.chips{justify-content:center}
+        .vcard{text-align:center}
+        .vcard .btn{margin-left:4px;margin-right:4px}
+        table.hours td:first-child{text-align:left}
+        .cart h3,.cart .empty,.cart .fine{text-align:center}
+        .item{text-align:center;align-items:center}
+        .item .variants{justify-content:center}
+        .item .add{align-self:center}
+        .tabs{justify-content:center}
+        .menu-note{text-align:center}
+        footer .cols{justify-content:center;text-align:center}
+        footer .brand small{text-align:center}
+      }
 
       .hero{position:relative;color:var(--hero-ink);overflow:hidden}
       .hero img.bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
@@ -247,6 +274,51 @@
         display:none;align-items:center;justify-content:center;padding:0 6px;
       }
       .wa-float .n.show{display:inline-flex}
+
+      /* ---------- Animación ---------- */
+      @keyframes riseIn{
+        from{opacity:0;transform:translateY(26px)}
+        to{opacity:1;transform:translateY(0)}
+      }
+      @keyframes heroIn{
+        from{opacity:0;transform:translateY(18px)}
+        to{opacity:1;transform:translateY(0)}
+      }
+      @keyframes waPulse{
+        0%{box-shadow:0 8px 24px rgba(0,0,0,.3),0 0 0 0 rgba(31,170,85,.45)}
+        70%{box-shadow:0 8px 24px rgba(0,0,0,.3),0 0 0 16px rgba(31,170,85,0)}
+        100%{box-shadow:0 8px 24px rgba(0,0,0,.3),0 0 0 0 rgba(31,170,85,0)}
+      }
+      @keyframes dotPulse{
+        0%,100%{transform:scale(1)}
+        50%{transform:scale(1.35)}
+      }
+      .hero-in > *{animation:heroIn .8s cubic-bezier(.22,.8,.3,1) both}
+      .hero-in > *:nth-child(2){animation-delay:.1s}
+      .hero-in > *:nth-child(3){animation-delay:.2s}
+      .hero-in > *:nth-child(4){animation-delay:.3s}
+      .hero-in > *:nth-child(5){animation-delay:.42s}
+      .wa-float{animation:waPulse 2.6s ease-out infinite}
+      .dot{animation:dotPulse 2s ease-in-out infinite}
+      .reveal{opacity:0;transform:translateY(26px);transition:opacity .7s ease,transform .7s cubic-bezier(.22,.8,.3,1)}
+      .reveal.in{opacity:1;transform:none}
+      .reveal.d1{transition-delay:.08s}
+      .reveal.d2{transition-delay:.16s}
+      .reveal.d3{transition-delay:.24s}
+      .item.pop{animation:riseIn .5s cubic-bezier(.22,.8,.3,1) both}
+      .fav{transition:transform .25s ease, box-shadow .25s ease}
+      .fav:hover{transform:translateY(-4px)}
+      .btn{transition:transform .15s ease, background .15s ease, box-shadow .2s ease}
+      .btn:hover{transform:translateY(-2px)}
+      .tab,.variant,.add{transition:background .15s ease,color .15s ease,border-color .15s ease,transform .15s ease}
+      .tab:hover,.variant:hover{transform:translateY(-1px)}
+      .add:active{transform:scale(.96)}
+      .frase p{transition:letter-spacing .4s ease}
+      @media (prefers-reduced-motion: reduce){
+        html{scroll-behavior:auto}
+        *,*::before,*::after{animation:none !important;transition:none !important}
+        .reveal{opacity:1;transform:none}
+      }
     </style>
   </head>
   <body>
@@ -491,6 +563,7 @@
       var selected = {};
       var cart = {};
       var currentCat = MENU[0].id;
+      var animateItems = true;
 
       MENU.forEach(function(cat){
         var b = document.createElement("button");
@@ -500,7 +573,9 @@
           currentCat = cat.id;
           tabsEl.querySelectorAll(".tab").forEach(function(t){ t.setAttribute("aria-selected","false"); });
           b.setAttribute("aria-selected","true");
+          animateItems = true;
           renderItems();
+          animateItems = false;
         });
         tabsEl.appendChild(b);
       });
@@ -514,6 +589,10 @@
           if (selected[selKey] === undefined) selected[selKey] = 0;
           var card = document.createElement("div");
           card.className = "item";
+          if (animateItems){
+            card.classList.add("pop");
+            card.style.animationDelay = (idx * 55) + "ms";
+          }
           var h = document.createElement("h3"); h.textContent = item.n;
           card.appendChild(h);
           if (item.d){
@@ -601,7 +680,34 @@
       });
 
       renderItems();
+      animateItems = false;
       renderCart();
+
+      // ---------- Aparición suave al hacer scroll ----------
+      (function(){
+        var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        if (reduce || !("IntersectionObserver" in window)) return;
+        var els = document.querySelectorAll(".sec-head, .fav, .temporada, .frase p, .cart, .about img, .about > div, .vcard");
+        var io = new IntersectionObserver(function(entries){
+          entries.forEach(function(e){
+            if (e.isIntersecting){
+              e.target.classList.add("in");
+              io.unobserve(e.target);
+            }
+          });
+        }, { threshold: 0, rootMargin: "0px" });
+        els.forEach(function(el, i){
+          // Lo que ya se ve al cargar nunca se oculta: solo anima lo que está fuera de pantalla
+          if (el.getBoundingClientRect().top < window.innerHeight) return;
+          el.classList.add("reveal");
+          if (el.classList.contains("fav")) el.classList.add("d" + ((i % 3) + 1));
+          io.observe(el);
+        });
+        // Respaldo: pase lo que pase, nada se queda invisible
+        setTimeout(function(){
+          els.forEach(function(el){ el.classList.add("in"); });
+        }, 1600);
+      })();
 
       // ---------- Horario según Google (America/Monterrey) ----------
       var HOURS = { 0:[14,22], 1:[8,22], 2:[8,22], 3:[8,22], 4:[8,22], 5:[8,22], 6:[8,22] };
